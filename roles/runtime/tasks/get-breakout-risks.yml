@@ -1,0 +1,14 @@
+---
+- name: Get policy violations with risk of potential container breakout to nodes
+  uri:
+    url: "https://{{ central_addr }}:{{ central_port}}/v1/alerts/summary/groups"
+    method: GET
+    user: admin
+    password: "{{ admin_password }}"
+    body_format: json
+    force_basic_auth: true
+    validate_certs: no
+    return_content: yes
+  register: runtime_violations
+- debug:
+    var: runtime_violations

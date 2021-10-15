@@ -5,4 +5,9 @@ all:
         127.0.0.1:
       vars:
         ansible_connection: local
-        ansible_python_interpreter: /usr/bin/python3 
+        ansible_python_interpreter: /usr/bin/python3
+        central_addr: <insert-central-addr>
+        central_port: 443
+        admin_password: <insert-admin-password-for-central>
+        yaml_files: ~/<your-directory-path>/roles/runtime/files/yamls/*.yaml
+        policy_files:  ~/<your-directory-path>/roles/runtime/files/policies/*.json

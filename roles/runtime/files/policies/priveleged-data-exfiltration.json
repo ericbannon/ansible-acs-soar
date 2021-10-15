@@ -1,0 +1,78 @@
+{
+    "policies": [
+        {
+            "id": "7bc19ac7-89db-45fd-90b0-7a14cbe50ea0",
+            "name": "Privileged container with host mount executes data exfiltration process ",
+            "description": "",
+            "rationale": "",
+            "remediation": "",
+            "disabled": false,
+            "categories": [
+                "Privileges"
+            ],
+            "fields": null,
+            "lifecycleStages": [
+                "RUNTIME"
+            ],
+            "eventSource": "DEPLOYMENT_EVENT",
+            "whitelists": [],
+            "exclusions": [],
+            "scope": [],
+            "severity": "CRITICAL_SEVERITY",
+            "enforcementActions": [],
+            "notifiers": [],
+            "lastUpdated": "2021-10-15T05:27:52.779991727Z",
+            "SORTName": "",
+            "SORTLifecycleStage": "",
+            "SORTEnforcement": false,
+            "policyVersion": "1.1",
+            "policySections": [
+                {
+                    "sectionName": "Policy Section 1",
+                    "policyGroups": [
+                        {
+                            "fieldName": "Privileged Container",
+                            "booleanOperator": "OR",
+                            "negate": false,
+                            "values": [
+                                {
+                                    "value": "true"
+                                }
+                            ]
+                        },
+                        {
+                            "fieldName": "Writable Mounted Volume",
+                            "booleanOperator": "OR",
+                            "negate": false,
+                            "values": [
+                                {
+                                    "value": "true"
+                                }
+                            ]
+                        },
+                        {
+                            "fieldName": "Process Name",
+                            "booleanOperator": "OR",
+                            "negate": false,
+                            "values": [
+                                {
+                                    "value": "scp|sshfs|ssh-copy-id|rsync"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "mitreAttackVectors": [
+                {
+                    "tactic": "TA0010",
+                    "techniques": [
+                        ""
+                    ]
+                }
+            ],
+            "criteriaLocked": false,
+            "mitreVectorsLocked": false
+        }
+    ]
+}

@@ -1,0 +1,13 @@
+- name: Create a k8s namespace
+  k8s:
+    name: testing
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: Deploy all yaml files into namespace
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ item }}"
+  with_fileglob:
+    - "{{ yaml_files }}"
