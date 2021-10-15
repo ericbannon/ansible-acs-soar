@@ -1,18 +1,4 @@
 - hosts: localhost
-
-  pre_tasks:
-    - copy:
-        dest: "files/kubeconfig"
-        content: "{{ lookup('env', 'KUBECONFIG_BASE64') | b64decode }}"
-    - set_fact:
-        #central_port: "{{ lookup('env', 'CENTRAL_PORT') | default('443', True) }}"
-        #central_addr: "{{ lookup('env', 'CENTRAL_ADDR') }}"
-        #admin_password: "{{ lookup('env', 'ADMIN_PASSWORD') }}"
-        kubeconfig: "files/kubeconfig"
-        imagepulluser: "{{ lookup('env', 'IMAGE_PULL_USER') }}"
-        imagepullpassword: "{{ lookup('env', 'IMAGE_PULL_PASSWORD') }}"
-        imageregistry: "{{ lookup('env', 'IMAGE_REGISTRY') | default('', True) }}"
-
   tasks:
     - import_role:
         name: runtime
