@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: listen
+  namespace: listen
+  labels:
+    app: listen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: listen
+  template:
+    metadata:
+      labels:
+        app: listen
+    spec:
+      serviceAccount: listen
+      containers:
+        - name: listen
+          image: srcporter/listen:1.8
+      securityContext:
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+        fsGroup: 3001
