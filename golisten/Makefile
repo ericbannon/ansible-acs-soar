@@ -1,11 +1,11 @@
 APP_NAME=docker.io/srcporter/listen
 TAG=1.0
 
-build: ## Build the container
+image: ## Build the container
 	docker build -t $(APP_NAME):$(TAG) .
 	docker push $(APP_NAME):$(TAG)
 
-build-nc: ## Build the container without caching
+image-nc: ## Build the container without caching
 	docker build --no-cache -t $(APP_NAME):$(TAG) .
 	docker push $(APP_NAME):$(TAG)
 

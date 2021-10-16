@@ -1,11 +1,10 @@
 package main
 
 import (
-        "log"
+        "fmt"
         "net/http"
-        "context"
         "time"
-        "encoding/json"
+//        "encoding/json"
         "github.com/gorilla/mux"
 )
 
@@ -283,53 +282,14 @@ type AlertBody struct {
     Name string
 }
 
-func apiResponse(status int, body interface{}) (*events.APIGatewayProxyResponse, error) {
-      resp := events.APIGatewayProxyResponse{Headers: map[string]string{"Content-Type": "application/json"}}
-      resp.StatusCode = status
-
-      stringBody, _ := json.Marshal(body)
-      resp.Body = string(stringBody)
-      return &resp, nil
+func HomeHandler (w http.ResponseWriter, r *http.Request) {
+    w.WriteHeader(http.StatusOK)
+    fmt.Fprintf(w, "Received: \n")
 }
 
-func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-        // the json from StackRox Central is the request Body
-        log.Printf("Body size = %d.\n", len(request.Body))
-
-        if request.HTTPMethod != "POST" {
-            return UnhandledMethod()
-        }
-
-        // parse the alert JSON into the SRAlert struct
-        var srevent SRAlert
-        if err := json.Unmarshal([]byte(request.Body), &srevent); err != nil {
-            log.Printf("could not unmarshal data into alert struct")
-            return apiResponse (http.StatusOK, "Invalid alert data")
-        }
-        // if you want to extract or transform any alert data, do it here
-
-        // create a cloudwatch log for the alert
-        logjson, err := json.Marshal(srevent)
-        if err != nil {
-            log.Printf("Could not marshal json data into string for this alert")
-            return apiResponse (http.StatusOK, "Invalid alert data")
-        }
-        log.Printf("%s", logjson)
-
-        // ack with the ID and policy name
-        alertbody := AlertBody{AlertID: srevent.Alert.ID, Name: srevent.Alert.Policy.Name}
-        return apiResponse(http.StatusOK, alertbody)
-
-
-        // as an alternative to the above, you can just log the alert request body:
-        //log.Printf("%s", request.Body)
-        //return apiResponse(http.StatusOK, "acknowledged")
-}
 
 func main() {
     r := mux.NewRouter()
-    r.HandleFunc("/", HomeHandler)
-//    r.HandleFunc("/products", ProductsHandler)
-//    r.HandleFunc("/articles", ArticlesHandler)
+    r.HandleFunc("/", HomeHandler).Methods("POST")
     http.Handle("/", r)
 }

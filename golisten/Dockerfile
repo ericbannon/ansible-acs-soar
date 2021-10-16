@@ -11,8 +11,7 @@ RUN ls -l /go/bin
 
 # Now copy it into our base image.
 FROM redhat/ubi8-micro
-RUN yum update -y
-COPY --from=build /go/bin/listen /
+COPY --from=build /go/src/listen/listen /
 USER 3001:3001
 
 CMD [ "/listen" ]
