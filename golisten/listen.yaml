@@ -23,3 +23,10 @@ spec:
         readOnlyRootFilesystem: true
         allowPrivilegeEscalation: false
         fsGroup: 3001
+      volumes:
+        - name: config
+          configMap:
+          name: playbook
+          items:
+          - key: "playbook.json"
+            path: "playbook.json"

@@ -4,7 +4,7 @@ import (
         "fmt"
         "net/http"
         "time"
-//        "encoding/json"
+        "encoding/json"
         "github.com/gorilla/mux"
 )
 
@@ -277,14 +277,31 @@ type SRAlert struct {
 	} `json:"alert"`
 }
 
-type AlertBody struct {
-    AlertID string
+type ViolationResponse struct {
+    ViolationID string
     Name string
 }
 
 func HomeHandler (w http.ResponseWriter, r *http.Request) {
+    var violation SRAlert
+
+    if err := json.NewDecoder(r.Body).Decode(&violation); err != nil {
+        fmt.Println(err)
+        http.Error(w, "Error decoding alert from ACS", http.StatusBadRequest)
+        return
+    }
+    // dispatch the playbook
+
+    // response
+    response := ViolationResponse{ViolationID:"1", Name:"placeholder"}
+    respJSON, err := json.Marshal(response)
+    if (err != nil) {
+        fmt.Println(err)
+        http.Error(w, "Error building response object", http.StatusBadRequest)
+        return
+    }
     w.WriteHeader(http.StatusOK)
-    fmt.Fprintf(w, "Received: \n")
+    w.Write(respJSON)
 }
 
 

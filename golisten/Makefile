@@ -1,4 +1,4 @@
-APP_NAME=docker.io/srcporter/listen
+APP_NAME=quay.io/cporter/listener
 TAG=1.0
 
 image: ## Build the container
