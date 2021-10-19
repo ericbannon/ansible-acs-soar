@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: playbook
+data:
+  playbook.json: |
+    {
+      [
+        {
+          "Name":"RPMExecute",
+          "Policy":"Red Hat Package Manager Execution",
+          "Playbook":"ScaleDownPlaybook"
+        },
+        {
+          "Name":"CryptoMiner",
+          "Policy":"Cryptocurrency Mining Process Execution",
+          "Playbook":"ForensicsPlaybook"
+        }
+      ]
+    }
+    
