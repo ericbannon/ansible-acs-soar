@@ -11,7 +11,7 @@ RUN ls -l /go/bin
 
 # Now copy it into our base image.
 FROM redhat/ubi8-micro
-COPY --from=build /go/src/listen/listen /
+COPY --from=build /go/src/listen/listen /usr/bin
 USER 3001:3001
 
-CMD [ "/listen" ]
+CMD [ "/usr/bin/listen" ]

@@ -1,10 +1,11 @@
 package main
 
 import (
-        "fmt"
+        "log"
         "net/http"
         "time"
         "encoding/json"
+        "io/ioutil"
         "github.com/gorilla/mux"
 )
 
@@ -282,21 +283,65 @@ type ViolationResponse struct {
     Name string
 }
 
+type PlaybookMap []struct {
+	Name     string `json:"Name"`
+	Policy   string `json:"Policy"`
+	Playbook string `json:"Playbook"`
+}
+
+
+// global tracker for last update initialized to zero... a long time ago
+var lastUpdateTimestamp time.Time = time.Time{}
+var playbooks PlaybookMap
+
+func readPlaybookConfig () {
+    // first, check if there's been any change
+    if (time.Since(lastUpdateTimestamp).Seconds() < 60) {
+        log.Println("Config Map change too recent for update")
+        return
+    }
+
+    // if changed, read values from config
+    log.Println ("opening config:")
+
+    file, _ := ioutil.ReadFile("/var/run/playbook.json")
+
+    err := json.Unmarshal([]byte(file), &playbooks)
+    if (err != nil) {
+        log.Println(err)
+        return
+    }
+
+    log.Println("found %s entries", len(playbooks))
+
+    // update last timestamp
+    lastUpdateTimestamp = time.Now()
+    return
+}
+
 func HomeHandler (w http.ResponseWriter, r *http.Request) {
     var violation SRAlert
 
+    // update the playbook configuration
+    readPlaybookConfig()
+
     if err := json.NewDecoder(r.Body).Decode(&violation); err != nil {
-        fmt.Println(err)
+        log.Println(err)
         http.Error(w, "Error decoding alert from ACS", http.StatusBadRequest)
         return
     }
     // dispatch the playbook
+    for _, playbook := range playbooks {
+        if (playbook.Policy == violation.Alert.Policy.Name) {
+            log.Println("Dispatching playbook %s", playbook.Policy)
+        }
+    }
 
     // response
     response := ViolationResponse{ViolationID:"1", Name:"placeholder"}
     respJSON, err := json.Marshal(response)
     if (err != nil) {
-        fmt.Println(err)
+        log.Println(err)
         http.Error(w, "Error building response object", http.StatusBadRequest)
         return
     }
@@ -306,7 +351,11 @@ func HomeHandler (w http.ResponseWriter, r *http.Request) {
 
 
 func main() {
+    // get initial config from configMap
+    readPlaybookConfig()
+
     r := mux.NewRouter()
     r.HandleFunc("/", HomeHandler).Methods("POST")
     http.Handle("/", r)
+    http.ListenAndServe(":8080", r)
 }

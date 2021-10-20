@@ -18,15 +18,40 @@ spec:
       serviceAccount: listen
       containers:
         - name: listen
-          image: srcporter/listen:1.8
+          image: quay.io/cporter/listen:1.03
       securityContext:
         readOnlyRootFilesystem: true
         allowPrivilegeEscalation: false
-        fsGroup: 3001
+        capabilities:
+            drop:
+              - all
+            add:
+              - NET_BIND_SERVICE
+        runaAsUser: 3001
+        runaAsGroup: 3001
       volumes:
         - name: config
           configMap:
           name: playbook
           items:
           - key: "playbook.json"
-            path: "playbook.json"
+            path: "/var/run/playbook.json"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: listen
+  namespace: listen
+spec:
+  type: ClusterIP
+  selector:
+    app: listen
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: listen
+  namespace: listen

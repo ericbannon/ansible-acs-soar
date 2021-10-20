@@ -1,5 +1,6 @@
-APP_NAME=quay.io/cporter/listener
-TAG=1.0
+APP_NAME=quay.io/cporter/listen
+EXEC_NAME=listen
+TAG=1.03
 
 image: ## Build the container
 	docker build -t $(APP_NAME):$(TAG) .
@@ -10,7 +11,7 @@ image-nc: ## Build the container without caching
 	docker push $(APP_NAME):$(TAG)
 
 run: ## Run container on port 5000
-	docker run -p 80:8080/tcp $(APP_NAME):$(TAG) --name $(APP_NAME)
+	docker run -p 80:8080/tcp --name $(EXEC_NAME) $(APP_NAME):$(TAG) 
 
 deploy: ## deploy using kubernetes
 	kubectl create namespace listen

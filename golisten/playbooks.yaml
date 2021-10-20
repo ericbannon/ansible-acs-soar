@@ -2,9 +2,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: playbook
+  namespace: listen
 data:
   playbook.json: |
-    {
       [
         {
           "Name":"RPMExecute",
@@ -17,5 +17,3 @@ data:
           "Playbook":"ForensicsPlaybook"
         }
       ]
-    }
-    
