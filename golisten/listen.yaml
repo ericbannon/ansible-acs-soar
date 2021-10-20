@@ -18,7 +18,14 @@ spec:
       serviceAccount: listen
       containers:
         - name: listen
-          image: quay.io/cporter/listen:1.05
+          image: quay.io/cporter/listen:1.1012
+          resources:
+            limits:
+              cpu: "1"
+              memory: "500Mi"
+            requests:
+              cpu: "0.1"
+              memory: "10Mi"
           volumeMounts:
           - name: playbook-config-volume
             mountPath: /etc/playbook

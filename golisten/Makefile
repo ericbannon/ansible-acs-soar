@@ -1,18 +1,40 @@
 APP_NAME=quay.io/cporter/listen
 EXEC_NAME=listen
-TAG=1.05
+BUILD_NUMBER_FILE=buildnum.txt
 
-image: ## Build the container
+.PHONY: $(BUILD_NUMBER_FILE)
+
+$(BUILD_NUMBER_FILE):
+	@if ! test -f $(BUILD_NUMBER_FILE); then echo 0 > $(BUILD_NUMBER_FILE); fi 
+	@echo $$(($$(cat $(BUILD_NUMBER_FILE)) + 1)) > $(BUILD_NUMBER_FILE)
+
+## Build the container
+image: TAG = 1.$(shell cat $(BUILD_NUMBER_FILE))
+
+image: $(BUILD_NUMBER_FILE)
+	$(info Starting image build with tag $(TAG))
 	docker build -t $(APP_NAME):$(TAG) .
 	docker push $(APP_NAME):$(TAG)
+	## rewrite YAML
+	sed -E -i .bak 's/:[0-9]\.[0-9]{4}/:$(TAG)/g' listen.yaml
 
-image-nc: ## Build the container without caching
+## Build the container without caching
+image-nc: TAG = 1.$(shell cat $(BUILD_NUMBER_FILE))
+
+image-nc: $(BUILD_NUMBER_FILE)
+	$(info Starting image build with tag $(TAG))
 	docker build --no-cache -t $(APP_NAME):$(TAG) .
 	docker push $(APP_NAME):$(TAG)
 
-run: ## Run container on port 5000
+## Run container on port 5000
+run: 
 	docker run -p 80:8080/tcp --name $(EXEC_NAME) $(APP_NAME):$(TAG) 
 
-deploy: ## deploy using kubernetes
-	kubectl create namespace listen
-	kubectl create -f listen.yaml
+## deploy using kubernetes
+deploy: 
+	oc create namespace listen || echo "namespace already created"
+	oc delete -f playbooks.yaml
+	oc create -f playbooks.yaml
+	oc delete -f listen.yaml
+	oc create -f listen.yaml
+	

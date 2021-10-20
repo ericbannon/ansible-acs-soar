@@ -283,16 +283,16 @@ type ViolationResponse struct {
     Name string
 }
 
-type PlaybookMap []struct {
-	Name     string `json:"Name"`
-	Policy   string `json:"Policy"`
-	Playbook string `json:"Playbook"`
+type PlaybookMap struct {
+	Name     string `json:"name"`
+	Policy   string `json:"policy"`
+	Playbook string `json:"playbook"`
 }
 
 
 // global tracker for last update initialized to zero... a long time ago
 var lastUpdateTimestamp time.Time = time.Time{}
-var playbooks PlaybookMap
+var playbooks []PlaybookMap
 
 func readPlaybookConfig () {
     // first, check if there's been any change
@@ -302,16 +302,19 @@ func readPlaybookConfig () {
     }
 
     // if changed, read values from config
-    log.Println ("opening config:")
-    file, _ := ioutil.ReadFile("/etc/playbook/playbook.json")
-
-    err := json.Unmarshal([]byte(file), &playbooks)
+    log.Println ("opening config from /etc/playbook:")
+    file, err := ioutil.ReadFile("/etc/playbook/playbook.json")
+    if (err != nil) {
+        log.Println(err)
+        return
+    }
+    err = json.Unmarshal([]byte(file), &playbooks)
     if (err != nil) {
         log.Println(err)
         return
     }
 
-    log.Println("found %s entries", len(playbooks))
+    log.Println("found ", len(playbooks), " entries in playbook configmap")
 
     // update last timestamp
     lastUpdateTimestamp = time.Now()
@@ -329,6 +332,7 @@ func HomeHandler (w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Error decoding alert from ACS", http.StatusBadRequest)
         return
     }
+
     // dispatch the playbook
     for _, playbook := range playbooks {
         if (playbook.Policy == violation.Alert.Policy.Name) {

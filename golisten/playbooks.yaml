@@ -7,13 +7,13 @@ data:
   playbook.json: |
       [
         {
-          "Name":"RPMExecute",
-          "Policy":"Red Hat Package Manager Execution",
-          "Playbook":"ScaleDownPlaybook"
+          "name":"RPMExecute",
+          "policy":"Red Hat Package Manager Execution",
+          "playbook":"ScaleDownPlaybook"
         },
         {
-          "Name":"CryptoMiner",
-          "Policy":"Cryptocurrency Mining Process Execution",
-          "Playbook":"ForensicsPlaybook"
+          "name":"CryptoMiner",
+          "policy":"Cryptocurrency Mining Process Execution",
+          "playbook":"ForensicsPlaybook"
         }
       ]
