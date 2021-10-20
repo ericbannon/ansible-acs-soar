@@ -6,7 +6,12 @@ import (
         "time"
         "encoding/json"
         "io/ioutil"
+        "context"
+
         "github.com/gorilla/mux"
+        "github.com/apenella/go-ansible/pkg/options"
+        "github.com/apenella/go-ansible/pkg/playbook"
+
 )
 
 type SRAlert struct {
@@ -321,7 +326,33 @@ func readPlaybookConfig () {
     return
 }
 
-func HomeHandler (w http.ResponseWriter, r *http.Request) {
+func dispatchPlaybook (playbookName string) {
+    // load playbook from configmap file
+    log.Printf("Received dispatch for file %s", playbookName)
+
+    ansiblePlaybookConnectionOptions := &options.AnsibleConnectionOptions{
+		Connection: "local",
+        User:       "runner",
+	}
+
+	ansiblePlaybookOptions := &playbook.AnsiblePlaybookOptions{
+		Inventory: "127.0.0.1,",
+	}
+
+	playbook := &playbook.AnsiblePlaybookCmd{
+		Playbooks:         []string{playbookName},
+		ConnectionOptions: ansiblePlaybookConnectionOptions,
+		Options:           ansiblePlaybookOptions,
+	}
+
+	err := playbook.Run(context.TODO())
+	if err != nil {
+		panic(err)
+	}
+
+}
+
+func homeHandler (w http.ResponseWriter, r *http.Request) {
     var violation SRAlert
 
     // update the playbook configuration
@@ -336,7 +367,8 @@ func HomeHandler (w http.ResponseWriter, r *http.Request) {
     // dispatch the playbook
     for _, playbook := range playbooks {
         if (playbook.Policy == violation.Alert.Policy.Name) {
-            log.Println("Dispatching playbook %s", playbook.Policy)
+            log.Printf("Dispatching playbook %s", playbook.Policy)
+            dispatchPlaybook ("/etc/playbook/" + playbook.Playbook)
         }
     }
 
@@ -358,7 +390,7 @@ func main() {
     readPlaybookConfig()
 
     r := mux.NewRouter()
-    r.HandleFunc("/", HomeHandler).Methods("POST")
+    r.HandleFunc("/", homeHandler).Methods("POST")
     http.Handle("/", r)
     http.ListenAndServe(":8080", r)
 }

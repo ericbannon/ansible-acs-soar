@@ -9,11 +9,29 @@ data:
         {
           "name":"RPMExecute",
           "policy":"Red Hat Package Manager Execution",
-          "playbook":"ScaleDownPlaybook"
+          "playbook":"scaledown.yaml"
         },
         {
           "name":"CryptoMiner",
           "policy":"Cryptocurrency Mining Process Execution",
-          "playbook":"ForensicsPlaybook"
+          "playbook":"forensics.yaml"
         }
       ]
+  scaledown.yaml: |
+      ---
+      - hosts: all
+
+        tasks:
+          - name: simple-ansibleplaybook
+            debug:
+              msg: Running 'scaledown' example
+
+  forensics.yaml: |
+      ---
+      - hosts: all
+
+        tasks:
+          - name: collect forensics
+            debug:
+              msg: Running 'forensics' example
+

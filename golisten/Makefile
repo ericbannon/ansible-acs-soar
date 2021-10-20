@@ -5,7 +5,7 @@ BUILD_NUMBER_FILE=buildnum.txt
 .PHONY: $(BUILD_NUMBER_FILE)
 
 $(BUILD_NUMBER_FILE):
-	@if ! test -f $(BUILD_NUMBER_FILE); then echo 0 > $(BUILD_NUMBER_FILE); fi 
+	@if ! test -f $(BUILD_NUMBER_FILE); then echo 1000 > $(BUILD_NUMBER_FILE); fi 
 	@echo $$(($$(cat $(BUILD_NUMBER_FILE)) + 1)) > $(BUILD_NUMBER_FILE)
 
 ## Build the container
@@ -33,8 +33,11 @@ run:
 ## deploy using kubernetes
 deploy: 
 	oc create namespace listen || echo "namespace already created"
-	oc delete -f playbooks.yaml
+	oc delete -f playbooks.yaml || echo "configmap not found"
 	oc create -f playbooks.yaml
-	oc delete -f listen.yaml
+	oc delete -f listen.yaml || echo "deployment not found"
 	oc create -f listen.yaml
-	
+
+exec:
+	POD=$(shell oc -n listen get pod | grep listen | awk '{ print $1 }')
+
