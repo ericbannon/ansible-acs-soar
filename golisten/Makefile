@@ -1,6 +1,6 @@
 APP_NAME=quay.io/cporter/listen
 EXEC_NAME=listen
-TAG=1.03
+TAG=1.05
 
 image: ## Build the container
 	docker build -t $(APP_NAME):$(TAG) .

@@ -303,8 +303,7 @@ func readPlaybookConfig () {
 
     // if changed, read values from config
     log.Println ("opening config:")
-
-    file, _ := ioutil.ReadFile("/var/run/playbook.json")
+    file, _ := ioutil.ReadFile("/etc/playbook/playbook.json")
 
     err := json.Unmarshal([]byte(file), &playbooks)
     if (err != nil) {

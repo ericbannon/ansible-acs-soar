@@ -18,7 +18,10 @@ spec:
       serviceAccount: listen
       containers:
         - name: listen
-          image: quay.io/cporter/listen:1.03
+          image: quay.io/cporter/listen:1.05
+          volumeMounts:
+          - name: playbook-config-volume
+            mountPath: /etc/playbook
       securityContext:
         readOnlyRootFilesystem: true
         allowPrivilegeEscalation: false
@@ -30,12 +33,9 @@ spec:
         runaAsUser: 3001
         runaAsGroup: 3001
       volumes:
-        - name: config
+        - name: playbook-config-volume
           configMap:
-          name: playbook
-          items:
-          - key: "playbook.json"
-            path: "/var/run/playbook.json"
+            name: playbook
 ---
 apiVersion: v1
 kind: Service
