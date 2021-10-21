@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: playbook
+  namespace: listen
+data:
+  playbook.json: |
+      [
+        {
+          "name":"RPMExecute",
+          "policy":"Red Hat Package Manager Execution",
+          "playbook":"scaledown.yaml"
+        },
+        {
+          "name":"CryptoMiner",
+          "policy":"Cryptocurrency Mining Process Execution",
+          "playbook":"forensics.yaml"
+        }
+      ]
+  scaledown.yaml: |
+      ---
+      - hosts: all
+
+        tasks:
+          - name: simple-ansibleplaybook
+            debug:
+              msg: Running 'scaledown' example
+
+  forensics.yaml: |
+      ---
+      - hosts: all
+
+        tasks:
+          - name: collect forensics
+            debug:
+              msg: Running 'forensics' example
+
